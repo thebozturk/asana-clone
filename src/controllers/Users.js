@@ -1,6 +1,10 @@
 const { insert, list, loginUser } = require("../services/Users");
 const httpStatus = require("http-status");
-const { passwordToHash } = require("../scripts/utils/helper");
+const {
+  passwordToHash,
+  generateAccessToken,
+  generateRefreshToken,
+} = require("../scripts/utils/helper");
 
 const create = (req, res) => {
   req.body.password = passwordToHash(req.body.password);
@@ -21,6 +25,15 @@ const login = (req, res) => {
         return res
           .status(httpStatus.NOT_FOUND)
           .send({ message: "User not found." });
+
+      user = {
+        ...user.toObject(),
+        tokens: {
+          access_token: generateAccessToken(user),
+          refresh_roken: generateRefreshToken(user),
+        },
+      };
+      delete user.password;
       res.status(httpStatus.OK).send(user);
     })
     .catch((e) => res.status(httpStatus.INTERNAL_SERVER_ERROR).send(e));
