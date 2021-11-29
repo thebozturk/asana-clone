@@ -1,5 +1,9 @@
-const { insert, list, loginUser } = require("../services/Users");
+const { insert, list, loginUser, modify } = require("../services/Users");
 const httpStatus = require("http-status");
+const projectService = require("../services/Projects");
+const uuid = require("uuid");
+const eventEmitter = require("../scripts/events/eventEmitter");
+
 const {
   passwordToHash,
   generateAccessToken,
@@ -47,8 +51,62 @@ const index = (req, res) => {
     .catch((e) => res.status(httpStatus.INTERNAL_SERVER_ERROR).send(e));
 };
 
+const projectList = (req, res) => {
+  projectService
+    .list({ user_id: req.user?._id })
+    .then((projects) => {
+      res.status(httpStatus.OK).send(projects);
+    })
+    .catch(() =>
+      res.stauts(httpStatus.INTERNAL_SERVER_ERROR).send({
+        error: "An unexpected problem occurred during the operation",
+      })
+    );
+};
+
+const resetPassword = (req, res) => {
+  const new_password =
+    uuid.v4()?.split("-")[0] || `usr-${new Date().getTime()}`;
+  modify({ email: req.body.email }, { password: passwordToHash(new_password) })
+    .then((updateUser) => {
+      if (!updateUser)
+        return res
+          .status(httpStatus.NOT_FOUND)
+          .send({ error: "There is no user." });
+      eventEmitter.emit("send_email", {
+        to: updateUser.email,
+        subject: "Reset Password",
+        html: `Your password has been reset <br/> Do not forget to change your password after logging in. <br/> Your new password: <b>${new_password}</b> `,
+      });
+      res.status(httpStatus.OK).send({
+        message:
+          "We have sent the information required for the password reset process to your e-mail address.",
+      });
+    })
+    .catch(() =>
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR)
+        .send({ error: "There was an problem during the reset password," })
+    );
+};
+
+const update = (req, res) => {
+  modify({ _id: req.user?._id }, req.body)
+    .then((updateUser) => {
+      res.status(httpStatus.OK).send(updateUser);
+    })
+    .catch(() =>
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR)
+        .send({ error: "A problem occurred during the update process" })
+    );
+};
+
 module.exports = {
   create,
   index,
   login,
+  projectList,
+  resetPassword,
+  update,
 };
