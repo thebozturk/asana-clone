@@ -1,4 +1,4 @@
-const { insert, list, modify } = require("../services/Projects");
+const { insert, list, modify, remove } = require("../services/Projects");
 const httpStatus = require("http-status");
 
 const index = (req, res) => {
@@ -38,8 +38,34 @@ const update = (req, res) => {
     );
 };
 
+const deleteProject = (req, res) => {
+  if (!req.params?.id) {
+    return res.status(httpStatus.BAD_REQUEST).send({
+      message: "Id information is missing",
+    });
+  }
+  remove(req.params.id)
+    .then((deletedProject) => {
+      console.log(deletedProject);
+      if (!deleteProject) {
+        res.status(httpStatus.NOT_FOUND).send({
+          message: "Project not found",
+        });
+      }
+      res.status(httpStatus.OK).send({
+        message: "Project deleted successfully",
+      });
+    })
+    .catch((e) =>
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR)
+        .send({ error: "There was a problem during deleting" })
+    );
+};
+
 module.exports = {
   create,
   index,
   update,
+  deleteProject,
 };
