@@ -8,6 +8,7 @@ const {
   update,
   deleteUser,
   changePassword,
+  updateProfileImage,
 } = require("../controllers/Users");
 const schemas = require("../validations/Users");
 const authenticate = require("../middlewares/authenticate");
@@ -33,4 +34,5 @@ router
     validate(schemas.changePasswordValidation),
     changePassword
   );
+router.route("/update-profile-image").post(authenticate, updateProfileImage);
 module.exports = router;

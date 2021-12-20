@@ -9,6 +9,7 @@ const httpStatus = require("http-status");
 const projectService = require("../services/Projects");
 const uuid = require("uuid");
 const eventEmitter = require("../scripts/events/eventEmitter");
+const path = require("path");
 
 const {
   passwordToHash,
@@ -146,6 +147,42 @@ const changePassword = (req, res) => {
     );
 };
 
+const updateProfileImage = (req, res) => {
+  console.log(req.files);
+
+  // File Control
+  if (!req?.files?.profile_image) {
+    return res.status(httpStatus.BAD_REQUEST).send({
+      error: "You do not have enough data to perform this operation.",
+    });
+  }
+  const extension = path.extname(req.files.profile_image.name);
+
+  const fileName = `${req?.user?._id}${extension}`;
+
+  // Upload File
+  const folderPath = path.join(__dirname, "../", "uploads/users", fileName);
+  req.files.profile_image.mv(folderPath, function (err) {
+    if (err) {
+      return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({
+        error: err,
+      });
+    }
+    modify({ _id: req.user?._id }, { profile_image: fileName })
+      .then((updateUser) => {
+        res.status(httpStatus.OK).send(updateUser);
+      })
+      .catch((e) =>
+        res
+          .status(httpStatus.INTERNAL_SERVER_ERROR)
+          .send({
+            error:
+              "The installation was successful but there was a problem during the update",
+          })
+      );
+  });
+};
+
 module.exports = {
   create,
   index,
@@ -155,4 +192,5 @@ module.exports = {
   update,
   deleteUser,
   changePassword,
+  updateProfileImage,
 };
