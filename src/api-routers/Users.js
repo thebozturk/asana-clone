@@ -6,6 +6,8 @@ const {
   projectList,
   resetPassword,
   update,
+  deleteUser,
+  changePassword,
 } = require("../controllers/Users");
 const schemas = require("../validations/Users");
 const authenticate = require("../middlewares/authenticate");
@@ -23,5 +25,12 @@ router
 router
   .route("/reset-password")
   .post(validate(schemas.resetPasswordValidation), resetPassword);
-
+router.route("/:id").delete(authenticate, deleteUser);
+router
+  .route("/change-password")
+  .post(
+    authenticate,
+    validate(schemas.changePasswordValidation),
+    changePassword
+  );
 module.exports = router;

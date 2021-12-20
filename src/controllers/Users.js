@@ -1,4 +1,10 @@
-const { insert, list, loginUser, modify } = require("../services/Users");
+const {
+  insert,
+  list,
+  loginUser,
+  modify,
+  remove,
+} = require("../services/Users");
 const httpStatus = require("http-status");
 const projectService = require("../services/Projects");
 const uuid = require("uuid");
@@ -102,6 +108,44 @@ const update = (req, res) => {
     );
 };
 
+const deleteUser = (req, res) => {
+  if (!req.params?.id) {
+    return res.status(httpStatus.BAD_REQUEST).send({
+      message: "Id information is missing",
+    });
+  }
+  remove(req.params.id)
+    .then((deletedUser) => {
+      console.log(deletedUser);
+      if (!deleteUser) {
+        res.status(httpStatus.NOT_FOUND).send({
+          message: "User not found",
+        });
+      }
+      res.status(httpStatus.OK).send({
+        message: "User deleted successfully",
+      });
+    })
+    .catch((e) =>
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR)
+        .send({ error: "There was a problem during deleting" })
+    );
+};
+
+const changePassword = (req, res) => {
+  req.body.password = passwordToHash(req.body.password);
+  modify({ _id: req.user?._id }, req.body)
+    .then((updateUser) => {
+      res.status(httpStatus.OK).send(updateUser);
+    })
+    .catch(() =>
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR)
+        .send({ error: "A problem occurred during the update process" })
+    );
+};
+
 module.exports = {
   create,
   index,
@@ -109,4 +153,6 @@ module.exports = {
   projectList,
   resetPassword,
   update,
+  deleteUser,
+  changePassword,
 };
