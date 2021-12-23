@@ -26,9 +26,8 @@ const TaskSchema = new Mongoose.Schema(
     order: Number,
     isCompleted: Boolean,
     comments: {
-      value: String,
-      created_at: Date,
-      updated_at: Date,
+      comment: String,
+      commented_at: Date,
       user_id: {
         type: Mongoose.Types.ObjectId,
         ref: "user",
