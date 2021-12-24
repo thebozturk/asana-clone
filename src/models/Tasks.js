@@ -25,14 +25,16 @@ const TaskSchema = new Mongoose.Schema(
     },
     order: Number,
     isCompleted: Boolean,
-    comments: {
-      comment: String,
-      commented_at: Date,
-      user_id: {
-        type: Mongoose.Types.ObjectId,
-        ref: "user",
+    comments: [
+      {
+        comment: String,
+        commented_at: Date,
+        user_id: {
+          type: Mongoose.Types.ObjectId,
+          ref: "user",
+        },
       },
-    },
+    ],
     media: [String],
     sub_tasks: [
       {
