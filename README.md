@@ -13,7 +13,7 @@
 
  `$ git clone https://github.com/thebozturk/asana-clone.git`
 
- `$ cd eCommerce-app`
+ `$ cd asana-clone`
  
  `$ npm install `
  
