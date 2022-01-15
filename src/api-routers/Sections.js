@@ -1,23 +1,28 @@
 const express = require("express");
-const {
-  index,
-  create,
-  update,
-  deleteSection,
-} = require("../controllers/Sections");
+const SectionsController = require("../controllers/Sections");
 const schemas = require("../validations/Sections");
 const validate = require("../middlewares/validate");
 const authenticateToken = require("../middlewares/authenticate");
 
 const router = express.Router();
 
-router.route("/:projectId").get(authenticateToken, index);
+router.route("/:projectId").get(authenticateToken, SectionsController.index);
 router
   .route("/")
-  .post(validate(schemas.createValidation), authenticateToken, create);
+  .post(
+    validate(schemas.createValidation),
+    authenticateToken,
+    SectionsController.create
+  );
 router
   .route("/:id")
-  .patch(authenticateToken, validate(schemas.updateValidation), update);
-router.route("/:id").delete(authenticateToken, deleteSection);
+  .patch(
+    authenticateToken,
+    validate(schemas.updateValidation),
+    SectionsController.update
+  );
+router
+  .route("/:id")
+  .delete(authenticateToken, SectionsController.deleteSection);
 
 module.exports = router;
