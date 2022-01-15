@@ -1,13 +1,5 @@
 const express = require("express");
-const {
-  create,
-  update,
-  DeleteTask,
-  makeComment,
-  deleteComment,
-  addSubTask,
-  fetchTask,
-} = require("../controllers/Tasks");
+const TasksController = require("../controllers/Tasks");
 const schemas = require("../validations/Tasks");
 const validate = require("../middlewares/validate");
 const authenticateToken = require("../middlewares/authenticate");
@@ -16,18 +8,36 @@ const router = express.Router();
 
 router
   .route("/")
-  .post(validate(schemas.createValidation), authenticateToken, create);
+  .post(
+    validate(schemas.createValidation),
+    authenticateToken,
+    TasksController.create
+  );
 router
   .route("/:id")
-  .patch(authenticateToken, validate(schemas.updateValidation), update);
-router.route("/:id").delete(authenticateToken, DeleteTask);
+  .patch(
+    authenticateToken,
+    validate(schemas.updateValidation),
+    TasksController.update
+  );
+router.route("/:id").delete(authenticateToken, TasksController.DeleteTask);
 router
   .route("/:id/make-comment")
-  .post(authenticateToken, validate(schemas.commentValidation), makeComment);
-router.route("/:id/:commentId").delete(authenticateToken, deleteComment);
+  .post(
+    authenticateToken,
+    validate(schemas.commentValidation),
+    TasksController.makeComment
+  );
+router
+  .route("/:id/:commentId")
+  .delete(authenticateToken, TasksController.deleteComment);
 router
   .route("/:id/add-sub-task")
-  .post(validate(schemas.createValidation), authenticateToken, addSubTask);
-router.route("/:id").get(authenticateToken, fetchTask);
+  .post(
+    validate(schemas.createValidation),
+    authenticateToken,
+    TasksController.addSubTask
+  );
+router.route("/:id").get(authenticateToken, TasksController.fetchTask);
 
 module.exports = router;
