@@ -11,6 +11,7 @@ const {
 const events = require("./scripts/events");
 const loaders = require("./loaders");
 const path = require("path");
+const Service = require("./services/BaseService");
 
 config();
 loaders();
@@ -29,4 +30,7 @@ app.listen(process.env.APP_PORT, () => {
   app.use("/users", UserRoutes);
   app.use("/sections", SectionRoutes);
   app.use("/tasks", TaskRoutes);
+
+  // copy service to global
+  const service = new Service("Model");
 });
