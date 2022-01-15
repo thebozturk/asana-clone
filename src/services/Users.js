@@ -1,29 +1,10 @@
-const User = require("../models/Users");
+const BaseService = require("./BaseService");
+const BaseModel = require("../models/Users");
 
-const insert = (data) => {
-  const user = new User(data);
-  return user.save();
-};
+class Users extends BaseService {
+  constructor() {
+    super(BaseModel);
+  }
+}
 
-const loginUser = (loginData) => {
-  return User.findOne(loginData);
-};
-
-const list = () => {
-  return User.find({});
-};
-const modify = (where, data) => {
-  return User.findOneAndUpdate(where, data, { new: true });
-};
-
-const remove = (id) => {
-  return User.findByIdAndDelete(id);
-};
-
-module.exports = {
-  insert,
-  list,
-  loginUser,
-  modify,
-  remove,
-};
+module.exports = new Users();

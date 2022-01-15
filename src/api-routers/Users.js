@@ -1,38 +1,41 @@
 const express = require("express");
-const {
-  create,
-  index,
-  login,
-  projectList,
-  resetPassword,
-  update,
-  deleteUser,
-  changePassword,
-  updateProfileImage,
-} = require("../controllers/Users");
+const UsersController = require("../controllers/Users");
 const schemas = require("../validations/Users");
 const authenticate = require("../middlewares/authenticate");
 const validate = require("../middlewares/validate");
 
 const router = express.Router();
 
-router.get("/", index);
-router.route("/").post(validate(schemas.createValidation), create);
-router.route("/login").post(validate(schemas.loginValidation), login);
-router.route("/projects").get(authenticate, projectList);
+router.get("/", UsersController.index);
 router
   .route("/")
-  .patch(authenticate, validate(schemas.updateValidation), update);
+  .post(validate(schemas.createValidation), UsersController.create);
+router
+  .route("/login")
+  .post(validate(schemas.loginValidation), UsersController.login);
+router.route("/projects").get(authenticate, UsersController.projectList);
+router
+  .route("/")
+  .patch(
+    authenticate,
+    validate(schemas.updateValidation),
+    UsersController.update
+  );
 router
   .route("/reset-password")
-  .post(validate(schemas.resetPasswordValidation), resetPassword);
-router.route("/:id").delete(authenticate, deleteUser);
+  .post(
+    validate(schemas.resetPasswordValidation),
+    UsersController.resetPassword
+  );
+router.route("/:id").delete(authenticate, UsersController.deleteUser);
 router
   .route("/change-password")
   .post(
     authenticate,
     validate(schemas.changePasswordValidation),
-    changePassword
+    UsersController.changePassword
   );
-router.route("/update-profile-image").post(authenticate, updateProfileImage);
+router
+  .route("/update-profile-image")
+  .post(authenticate, UsersController.updateProfileImage);
 module.exports = router;
