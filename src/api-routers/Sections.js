@@ -3,6 +3,7 @@ const SectionsController = require("../controllers/Sections");
 const schemas = require("../validations/Sections");
 const validate = require("../middlewares/validate");
 const authenticateToken = require("../middlewares/authenticate");
+const idChecker = require("../middlewares/idChecker");
 
 const router = express.Router();
 
@@ -17,12 +18,13 @@ router
 router
   .route("/:id")
   .patch(
+    idChecker(),
     authenticateToken,
     validate(schemas.updateValidation),
     SectionsController.update
   );
 router
   .route("/:id")
-  .delete(authenticateToken, SectionsController.deleteSection);
+  .delete(idChecker(), authenticateToken, SectionsController.deleteSection);
 
 module.exports = router;

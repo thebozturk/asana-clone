@@ -3,6 +3,7 @@ const UsersController = require("../controllers/Users");
 const schemas = require("../validations/Users");
 const authenticate = require("../middlewares/authenticate");
 const validate = require("../middlewares/validate");
+const idChecker = require("../middlewares/idChecker");
 
 const router = express.Router();
 
@@ -27,7 +28,9 @@ router
     validate(schemas.resetPasswordValidation),
     UsersController.resetPassword
   );
-router.route("/:id").delete(authenticate, UsersController.deleteUser);
+router
+  .route("/:id")
+  .delete(idChecker(), authenticate, UsersController.deleteUser);
 router
   .route("/change-password")
   .post(
