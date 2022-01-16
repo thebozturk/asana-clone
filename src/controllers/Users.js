@@ -4,6 +4,7 @@ const ProjectService = require("../services/Projects");
 const uuid = require("uuid");
 const eventEmitter = require("../scripts/events/eventEmitter");
 const path = require("path");
+
 const {
   passwordToHash,
   generateAccessToken,

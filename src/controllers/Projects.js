@@ -1,5 +1,6 @@
 const httpStatus = require("http-status");
 const ProjectService = require("../services/Projects");
+const ApiError = require("../errors/ApiError");
 
 class ProjectsController {
   index = (req, res) => {
@@ -21,7 +22,7 @@ class ProjectsController {
       });
   };
 
-  update = (req, res) => {
+  update = (req, res, next) => {
     console.log(req.params.id);
     if (!req.params?.id) {
       return res.status(httpStatus.BAD_REQUEST).send({
@@ -30,13 +31,12 @@ class ProjectsController {
     }
     ProjectService.update(req.params.id, req.body)
       .then((updatedProject) => {
+        if (updatedProject) {
+          return next(new ApiError("Project not found", httpStatus.NOT_FOUND));
+        }
         res.status(httpStatus.OK).send(updatedProject);
       })
-      .catch((e) =>
-        res
-          .status(httpStatus.INTERNAL_SERVER_ERROR)
-          .send({ error: "There was a problem during updating" })
-      );
+      .catch((e) => next(new ApiError(e.message)));
   };
 
   deleteProject = (req, res) => {

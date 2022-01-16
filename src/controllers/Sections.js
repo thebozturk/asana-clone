@@ -34,6 +34,11 @@ class SectionsController {
     }
     SectionService.update(req.params?.id, req.body)
       .then((updatedDoc) => {
+        if (!updatedDoc) {
+          return res.status(httpStatus.NOT_FOUND).send({
+            message: "Section not found",
+          });
+        }
         res.status(httpStatus.OK).send(updatedDoc);
       })
       .catch((e) =>
