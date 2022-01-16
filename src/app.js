@@ -11,7 +11,7 @@ const {
 const events = require("./scripts/events");
 const loaders = require("./loaders");
 const path = require("path");
-const Service = require("./services/BaseService");
+const errorHandler = require("./middlewares/errorHandler");
 
 config();
 loaders();
@@ -31,6 +31,12 @@ app.listen(process.env.APP_PORT, () => {
   app.use("/sections", SectionRoutes);
   app.use("/tasks", TaskRoutes);
 
-  // copy service to global
-  const service = new Service("Model");
+  app.use((req, res, next) => {
+    const error = new Error("This page you are looking for does not exist");
+    error.status = 404;
+    next(error);
+  });
+
+  //Error Handler
+  app.use(errorHandler);
 });
